@@ -1,0 +1,116 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2638
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 openapi: 3.0.0\
+info:\
+  title: Movie Ticket Payment Service\
+  description: This service handles the payment processing for online movie ticket purchases.\
+  version: 1.0.0\
+servers:\
+  - url: http://api.movieplex.com/payments\
+    description: Payment processing server for MoviePlex\
+paths:\
+  /process-payment:\
+    get:\
+      summary: Retrieve payment status\
+      description: Retrieves the status of a payment transaction based on a given transaction ID.\
+      parameters:\
+        - in: query\
+          name: transactionId\
+          schema:\
+            type: string\
+          required: true\
+          description: Unique identifier of the transaction\
+      responses:\
+        '200':\
+          description: Payment status retrieved successfully\
+          content:\
+            application/json:\
+              schema:\
+                type: object\
+                properties:\
+                  transactionId:\
+                    type: string\
+                  status:\
+                    type: string\
+                    description: The status of the payment\
+                    enum:\
+                      - success\
+                      - pending\
+                      - failed\
+        '404':\
+          description: Transaction ID not found\
+    post:\
+      summary: Processes payment for a movie ticket\
+      description: Takes payment details and processes the transaction for purchasing a movie ticket.\
+      requestBody:\
+        required: true\
+        content:\
+          application/json:\
+            schema:\
+              type: object\
+              properties:\
+                cardNumber:\
+                  type: string\
+                  description: Credit card number\
+                cardExpiry:\
+                  type: string\
+                  description: Credit card expiry date in MM/YY format\
+                cardCvv:\
+                  type: string\
+                  description: Credit card CVV code\
+                amount:\
+                  type: number\
+                  description: Amount to be charged\
+              required:\
+                - cardNumber\
+                - cardExpiry\
+                - cardCvv\
+                - amount\
+      responses:\
+        '200':\
+          description: Payment processed successfully\
+          content:\
+            application/json:\
+              schema:\
+                type: object\
+                properties:\
+                  transactionId:\
+                    type: string\
+                  status:\
+                    type: string\
+                    description: The status of the payment\
+                    enum:\
+                      - success\
+                      - pending\
+                      - failed\
+                  message:\
+                    type: string\
+                    description: A message accompanying the status\
+        '400':\
+          description: Invalid payment request data\
+        '500':\
+          description: Internal server error\
+    delete:\
+      summary: Cancel a payment transaction\
+      description: Cancels a payment transaction if it has not been completed yet.\
+      parameters:\
+        - in: query\
+          name: transactionId\
+          schema:\
+            type: string\
+          required: true\
+          description: Unique identifier of the transaction to be cancelled\
+      responses:\
+        '200':\
+          description: Payment transaction cancelled successfully\
+        '404':\
+          description: Transaction ID not found or not eligible for cancellation\
+        '409':\
+          description: Transaction cannot be cancelled at this stage\
+        '500':\
+          description: Internal server error}
